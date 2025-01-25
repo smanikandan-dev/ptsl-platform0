@@ -23,8 +23,8 @@ import com.itextos.beacon.commonlib.redisconnectionprovider.RedisConnectionProvi
 import com.itextos.beacon.commonlib.utility.CommonUtility;
 import com.itextos.beacon.commonlib.utility.DateTimeUtility;
 import com.itextos.beacon.errorlog.ErrorLog;
-import com.itextos.beacon.smslog.ConsumerRedisLog;
-import com.itextos.beacon.smslog.ProducertoRedisLog;
+//import com.itextos.beacon.smslog.ConsumerRedisLog;
+//import com.itextos.beacon.smslog.ProducertoRedisLog;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Pipeline;
@@ -173,7 +173,7 @@ public class KafkaUtility
             final String listKey = CommonUtility.combine(REDIS_SEPARATOR, REDIS_PRODUCER_KEY, aComponent.getKey(), aTopicName);
             jedis.lpush(listKey, aMessage.getJsonString());
             
-            ProducertoRedisLog.log(threadName+" : Component Name:" + aComponent + ", Topic ='" + aTopicName + "' Successfully added producer messages in redis count -" + aMessage);
+//            ProducertoRedisLog.log(threadName+" : Component Name:" + aComponent + ", Topic ='" + aTopicName + "' Successfully added producer messages in redis count -" + aMessage);
 
         }
         catch (final Exception e)
@@ -203,7 +203,7 @@ public class KafkaUtility
 
             log.fatal("Component Name:" + aComponent + ", Topic ='" + aTopicName + "' Successfully added producer messages in redis count -" + aMessage.size());
         
-            ProducertoRedisLog.log(threadName+" : Component Name:" + aComponent + ", Topic ='" + aTopicName + "' Successfully added producer messages in redis count -" + aMessage.size());
+//            ProducertoRedisLog.log(threadName+" : Component Name:" + aComponent + ", Topic ='" + aTopicName + "' Successfully added producer messages in redis count -" + aMessage.size());
         }
         catch (final Exception e)
         {
@@ -229,7 +229,7 @@ public class KafkaUtility
 
             log.fatal("Component Name:" + aComponent + ", Topic ='" + aTopicName + "' Successfully added consumer messages in redis count -" + aMessage.size());
 
-            ConsumerRedisLog.log("Component Name:" + aComponent + ", Topic ='" + aTopicName + "' Successfully added consumer messages in redis count -" + aMessage.size());
+//            ConsumerRedisLog.log("Component Name:" + aComponent + ", Topic ='" + aTopicName + "' Successfully added consumer messages in redis count -" + aMessage.size());
         }
         catch (final Exception e)
         {
@@ -283,7 +283,7 @@ public class KafkaUtility
                     if (log.isDebugEnabled())
                         log.debug("Messages count for the key '" + aKeys + "' Topicname '" + topicName + "' Messages Count '" + msgList.size() + "'");
                 
-                    ConsumerRedisLog.log("Messages count for the key '" + aKeys + "' Topicname '" + topicName + "' Messages Count '" + msgList.size() + "'");
+//                    ConsumerRedisLog.log("Messages count for the key '" + aKeys + "' Topicname '" + topicName + "' Messages Count '" + msgList.size() + "'");
                 }
                 
                 
