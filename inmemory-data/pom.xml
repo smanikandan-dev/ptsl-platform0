@@ -51,6 +51,10 @@
 			<artifactId>ptsl-accountsync</artifactId>
 			<version>${ptsl-accountsync-version}</version>
 		</dependency>
-		
+		<dependency>
+			<groupId>${ptsl-parent-groupid-commonlib}</groupId>
+			<artifactId>ptsl-inmemoryloader</artifactId>
+			<version>1.0.1</version>
+		</dependency>
 	</dependencies>
 </project>
