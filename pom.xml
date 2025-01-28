@@ -1,12 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.ptsl.beacon.commonlib</groupId>
-    <artifactId>ptsl-commonlib-parent</artifactId>
+    <groupId>com.ptsl.beacon</groupId>
+    <artifactId>ptsl-beacon-parent</artifactId>
     <version>1.0.0</version>
     <packaging>pom</packaging>
-    <name>ptsl-commonlib-parent</name>
-    <description>ptsl-commonlib-parent</description>
+    <name>ptsl-beacon-parent</name>
+    <description>ptsl-beacon-parent</description>
 
     <properties>
         <commons-logging-version>1.2</commons-logging-version>
@@ -33,8 +33,8 @@
         <gson-version>2.8.8</gson-version>
         <quartz-scheduler-version>2.3.2</quartz-scheduler-version>
 
-        <!-- iTexTos related jar files -->
-        <ptsl-parent-groupid-commonlib>com.ptsl.beacon.commonlib</ptsl-parent-groupid-commonlib>
+        <!-- iTexTos related jar files [commons] -->
+        <ptsl-parent-groupid-beacon>com.ptsl.beacon</ptsl-parent-groupid-beacon>
         <ptsl-commonpropertyloader-version>1.1.2</ptsl-commonpropertyloader-version>
         <ptsl-constants-version>1.0.2</ptsl-constants-version>
         <ptsl-utility-version>1.1.2</ptsl-utility-version>
@@ -56,6 +56,19 @@
         <ptsl-inmempromoheaderpool-version>1.0.0</ptsl-inmempromoheaderpool-version>
         <ptsl-inmemappconfigparams-version>1.0.0</ptsl-inmemappconfigparams-version>
         <ptsl-inmemintlrouteinfo-version>1.0.0</ptsl-inmemintlrouteinfo-version>
+        <!-- iTexTos related jar files [clienthandover] -->
+        <ptsl-utility-version>1.1.2</ptsl-utility-version>
+        <ptsl-redisconnectionprovider-version>1.1.0</ptsl-redisconnectionprovider-version>
+        <ptsl-inmemoryloader-version>1.0.1</ptsl-inmemoryloader-version>
+        <ptsl-httpclient-version>1.0.2</ptsl-httpclient-version>
+        <ptsl-kafkaservice-version>1.0.0</ptsl-kafkaservice-version>
+        <ptsl-inmemappconfigparams-version>1.0.0</ptsl-inmemappconfigparams-version>
+        <ptsl-apperrorhandler-version>1.0.0</ptsl-apperrorhandler-version>
+        <ptsl-httpclienthandover-version>1.0.0</ptsl-httpclienthandover-version>
+        <ptsl-messageprocessor-version>1.0.0</ptsl-messageprocessor-version>
+        <ptsl-componentconsumer-version>1.0.0</ptsl-componentconsumer-version>
+        <ptsl-inmemclientdlrpreferences-version>1.0.0</ptsl-inmemclientdlrpreferences-version>
+
         <!-- Build related -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <nexus_url>http://10.0.1.21:8081</nexus_url>
@@ -209,6 +222,9 @@
 <!--        <module>inmemory-indianp</module>-->
         <module>inmemory-intlcredit</module>
         <module>inmemory-elasticsearchcolumn</module>
+
+        <module>ch-httpclienthandover</module>
+        <module>ch-clienthandoveracceptproject</module>
 
 
     </modules>

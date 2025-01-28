@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>com.ptsl.beacon.commonlib</groupId>
-        <artifactId>ptsl-commonlib-parent</artifactId>
+        <groupId>com.ptsl.beacon</groupId>
+        <artifactId>ptsl-beacon-parent</artifactId>
         <version>1.0.0</version>
     </parent>
   <artifactId>ptsl-inmemsmppaccountdetails</artifactId>
@@ -30,17 +30,17 @@
             <artifactId>jul-to-slf4j</artifactId>
         </dependency>
         <dependency>
-            <groupId>${ptsl-parent-groupid-commonlib}</groupId>
+            <groupId>${ptsl-parent-groupid-beacon}</groupId>
             <artifactId>ptsl-pwdencryption</artifactId>
             <version>${ptsl-pwdencryption-version}</version>
         </dependency>
         <dependency>
-            <groupId>${ptsl-parent-groupid-commonlib}</groupId>
+            <groupId>${ptsl-parent-groupid-beacon}</groupId>
             <artifactId>ptsl-inmemoryloader</artifactId>
             <version>1.0.1</version>
         </dependency>
         <dependency>
-            <groupId>${ptsl-parent-groupid-commonlib}</groupId>
+            <groupId>${ptsl-parent-groupid-beacon}</groupId>
             <artifactId>ptsl-utility</artifactId>
             <version>${ptsl-utility-version}</version>
         </dependency>

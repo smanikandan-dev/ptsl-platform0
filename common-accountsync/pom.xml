@@ -3,8 +3,8 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.ptsl.beacon.commonlib</groupId>
-		<artifactId>ptsl-commonlib-parent</artifactId>
+		<groupId>com.ptsl.beacon</groupId>
+		<artifactId>ptsl-beacon-parent</artifactId>
 		<version>1.0.0</version>
 	</parent>
 	<artifactId>ptsl-accountsync</artifactId>
@@ -32,7 +32,7 @@
 			<artifactId>jul-to-slf4j</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>${ptsl-parent-groupid-commonlib}</groupId>
+			<groupId>${ptsl-parent-groupid-beacon}</groupId>
 			<artifactId>ptsl-redisconnectionprovider</artifactId>
 			<version>${ptsl-redisconnectionprovider-version}</version>
 		</dependency>
