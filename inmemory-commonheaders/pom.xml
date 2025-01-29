@@ -7,9 +7,9 @@
 		<artifactId>ptsl-beacon-parent</artifactId>
 		<version>1.0.0</version>
 	</parent>
-	<artifactId>itextos-inmemcommonheaders</artifactId>
-	<name>itextos-inmemcommonheaders</name>
-	<description>itextos-inmemcommonheaders</description>
+	<artifactId>ptsl-inmemcommonheaders</artifactId>
+	<name>ptsl-inmemcommonheaders</name>
+	<description>ptsl-inmemcommonheaders</description>
 	<dependencies>
 		<dependency>
 			<groupId>org.slf4j</groupId>

@@ -10,6 +10,7 @@
 	<artifactId>ptsl-inmemmessageutility</artifactId>
 	<name>ptsl-inmemmessageutility</name>
 	<description>ptsl-inmemmessageutility</description>
+	<version>1.0.0</version>
 	<dependencies>
 		<dependency>
 			<groupId>org.slf4j</groupId>
