@@ -32,6 +32,18 @@
         <drools-version>5.4.0.Final</drools-version>
         <gson-version>2.8.8</gson-version>
         <quartz-scheduler-version>2.3.2</quartz-scheduler-version>
+        <json-simple-version>1.1.1</json-simple-version>
+        <http-client-version>4.5.13</http-client-version>
+        <jaxb-api-version>2.2.11</jaxb-api-version>
+        <jaxb-core-version>2.2.11</jaxb-core-version>
+        <jaxb-impl-version>2.2.11</jaxb-impl-version>
+        <activation-version>1.1.1</activation-version>
+        <eu.bitwalke-version>1.21</eu.bitwalke-version>
+        <elasticsearch-rest-high-level-client-version>7.12.0</elasticsearch-rest-high-level-client-version>
+        <gson-version>2.8.8</gson-version>
+        <commons-csv-version>1.8</commons-csv-version>
+        <quartz-scheduler-version>2.3.2</quartz-scheduler-version>
+        <kafka-clients-version>2.8.0</kafka-clients-version>
 
         <!-- iTexTos related jar files [commons] -->
         <ptsl-parent-groupid-beacon>com.ptsl.beacon</ptsl-parent-groupid-beacon>
@@ -68,6 +80,82 @@
         <ptsl-messageprocessor-version>1.0.0</ptsl-messageprocessor-version>
         <ptsl-componentconsumer-version>1.0.0</ptsl-componentconsumer-version>
         <ptsl-inmemclientdlrpreferences-version>1.0.0</ptsl-inmemclientdlrpreferences-version>
+        <ptsl-elasticsearchcolumn-version>1.0.0</ptsl-elasticsearchcolumn-version>
+        <ptsl-inmemmessageutility-version>1.0.0</ptsl-inmemmessageutility-version>
+        <ptsl-inmemcustomfeatures-version>1.1.0</ptsl-inmemcustomfeatures-version>
+        <ptsl-inmemorycurrencyconversion-version>1.0.0</ptsl-inmemorycurrencyconversion-version>
+        <ptsl-decimalutility-version>1.0.0</ptsl-decimalutility-version>
+        <ptsl-inmemspecificblockoutdata-version>1.0.0</ptsl-inmemspecificblockoutdata-version>
+        <ptsl-blockoutprocess-version>1.0.0</ptsl-blockoutprocess-version>
+        <ptsl-iccore-version>1.0.0</ptsl-iccore-version>
+        <ptsl-duplicatecheckprocessor-version>1.0.0</ptsl-duplicatecheckprocessor-version>
+        <ptsl-msgtimeboundcheck-version>1.0.0</ptsl-msgtimeboundcheck-version>
+        <ptsl-dndchecker-version>1.0.0</ptsl-dndchecker-version>
+        <ptsl-templatefinder-version>1.1.0</ptsl-templatefinder-version>
+        <ptsl-vccore-version>1.0.0</ptsl-vccore-version>
+        <ptsl-sbcvcore-version>1.0.0</ptsl-sbcvcore-version>
+        <ptsl-inmemoptout-version>1.0.0</ptsl-inmemoptout-version>
+        <ptsl-inmemspamwordcheck-version>1.1.0</ptsl-inmemspamwordcheck-version>
+        <ptsl-inmemspecificblockoutdata-version>1.0.0</ptsl-inmemspecificblockoutdata-version>
+        <ptsl-inmemuserheader-version>1.0.0</ptsl-inmemuserheader-version>
+        <ptsl-inmemwhitelistnumbers-version>1.0.0</ptsl-inmemwhitelistnumbers-version>
+        <ptsl-inmemblocklistnumbers-version>1.0.1</ptsl-inmemblocklistnumbers-version>
+        <ptsl-messageflowutility-version>1.0.0</ptsl-messageflowutility-version>
+        <ptsl-inmemgovernmentheaders-version>1.0.0</ptsl-inmemgovernmentheaders-version>
+        <ptsl-inmemoryerrorinfo-version>1.0.0</ptsl-inmemoryerrorinfo-version>
+        <ptsl-inmemsmppaccountdetails-version>1.0.0</ptsl-inmemsmppaccountdetails-version>
+        <ptsl-inmemoryencryptinfo-version>1.0.0</ptsl-inmemoryencryptinfo-version>
+        <ptsl-inmemdnpayload-version>1.0.0</ptsl-inmemdnpayload-version>
+        <ptsl-dnplayloadutil-version>1.0.0</ptsl-dnplayloadutil-version>
+        <ptsl-walletbase-version>1.0.0</ptsl-walletbase-version>
+        <ptsl-walletprocess-version>1.1.1</ptsl-walletprocess-version>
+        <ptsl-cappingcheck-version>1.0.0</ptsl-cappingcheck-version>
+        <ptsl-billing-version>1.0.0</ptsl-billing-version>
+        <ptsl-singlednprocess-version>1.0.0</ptsl-singlednprocess-version>
+        <ptsl-inmemorydata-version>1.0.0</ptsl-inmemorydata-version>
+        <ptsl-dnpcore-version>1.0.0</ptsl-dnpcore-version>
+        <ptsl-subbiller-version>1.0.0</ptsl-subbiller-version>
+        <ptsl-prccore-version>1.0.0</ptsl-prccore-version>
+        <ptsl-inmemmsgtemplates-version>1.0.0</ptsl-inmemmsgtemplates-version>
+        <ptsl-messagetool-version>1.0.0</ptsl-messagetool-version>
+        <ptsl-vcprocess-version>1.0.0</ptsl-vcprocess-version>
+        <ptsl-duplicatecheckprocessor-version>1.0.0</ptsl-duplicatecheckprocessor-version>
+        <ptsl-msgtimeboundcheck-version>1.0.0</ptsl-msgtimeboundcheck-version>
+        <ptsl-inmemmsgvalidity-version>1.0.1</ptsl-inmemmsgvalidity-version>
+        <ptsl-inmemclientallowedheaders-version>1.0.0</ptsl-inmemclientallowedheaders-version>
+        <ptsl-inmemcommonheaders-version>1.0.0</ptsl-inmemcommonheaders-version>
+        <ptsl-inmemrouteinfo-version>1.0.0</ptsl-inmemrouteinfo-version>
+        <ptsl-faillistutil-version>1.0.0</ptsl-faillistutil-version>
+        <ptsl-faillistutil-version>1.0.0</ptsl-faillistutil-version>
+        <ptsl-carrierhandoverutility-version>1.0.0</ptsl-carrierhandoverutility-version>
+        <ptsl-kannelstatusupdater-version>1.0.0</ptsl-kannelstatusupdater-version>
+        <ptsl-inmemcarrierhandover-version>1.0.0</ptsl-inmemcarrierhandover-version>
+        <ptsl-topic2table-version>1.0.0</ptsl-topic2table-version>
+        <ptsl-dchcore-version>1.0.0</ptsl-dchcore-version>
+        <ptsl-chcore-version>1.0.0</ptsl-chcore-version>
+        <ptsl-rccore-version>1.0.0</ptsl-rccore-version>
+        <ptsl-walletconsumer-version>1.0.0</ptsl-walletconsumer-version>
+        <ptsl-vcdltcore-version>1.0.0</ptsl-vcdltcore-version>
+        <ptsl-inmemvisualizelink-version>1.0.0</ptsl-inmemvisualizelink-version>
+        <ptsl-r3ccore-version>1.0.0</ptsl-r3ccore-version>
+        <ptsl-inmemrouteretryinfo-version>1.0.0</ptsl-inmemrouteretryinfo-version>
+        <ptsl-dnrfallback-version>1.0.0</ptsl-dnrfallback-version>
+        <ptsl-blockoutwalletconsumer-version>1.0.0</ptsl-blockoutwalletconsumer-version>
+        <ptsl-elasticsearchutil-version>1.1.0</ptsl-elasticsearchutil-version>
+        <ptsl-smpp-info-version>1.0.1</ptsl-smpp-info-version>
+        <ptsl-prepaiduidata-version>1.0.0</ptsl-prepaiduidata-version>
+        <ptsl-timezoneutility-version>1.0.0</ptsl-timezoneutility-version>
+        <ptsl-inmeminterfacesinfo-version>1.0.0</ptsl-inmeminterfacesinfo-version>
+        <ptsl-countryinfo-version>1.0.0</ptsl-countryinfo-version>
+        <ptsl-ipvalidationutility-version>1.0.0</ptsl-ipvalidationutility-version>
+        <ptsl-generichttpapidata-version>1.0.0</ptsl-generichttpapidata-version>
+        <ptsl-interfaceparameters-version>1.0.0</ptsl-interfaceparameters-version>
+        <ptsl-interfaceutil-version>1.0.0</ptsl-interfaceutil-version>
+        <ptsl-interfacefallback-version>1.0.0</ptsl-interfacefallback-version>
+        <ptsl-cloudutil-version>1.0.0</ptsl-cloudutil-version>
+        <ptsl-generichttpapiprocessor-version>1.0.0</ptsl-generichttpapiprocessor-version>
+
+
 
         <!-- Build related -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -223,9 +311,88 @@
         <module>inmemory-intlcredit</module>
         <module>inmemory-elasticsearchcolumn</module>
 
+        <!--    ========= client handover modules =======-->
         <module>ch-httpclienthandover</module>
         <module>ch-clienthandoveracceptproject</module>
 
+        <!--======= platform  modules =======-->
+        <module>platform-elasticsearchutil</module>
+        <module>platform-decimalutility</module>
+        <module>platform-messageflowutility</module>
+        <module>platform-blockoutprocess</module>
+        <module>platform-intlprice</module>
+        <module>platform-dnpayloadutil</module>
+        <module>platform-walletbase</module>
+        <module>platform-walletprocess</module>
+        <module>platform-cappingcheck</module>
+        <module>platform-billing</module>
+        <module>platform-singledn</module>
+        <module>platform-dnpcore</module>
+        <module>platform-subbiller</module>
+        <module>platform-prccore</module>
+        <module>platform-messagetool</module>
+        <module>platform-templatefinder</module>
+        <module>platform-duplicatecheckprocessor</module>
+        <module>platform-msgtimeboundcheck</module>
+        <module>platform-faillistutil</module>
+        <module>platform-chcore</module>
+        <module>platform-carrierhandoverutility</module>
+        <module>platform-kannelstatusupdater</module>
+        <module>platform-topic2table</module>
+        <module>platform-dchcore</module>
+        <module>platform-rccore</module>
+        <module>platform-walletconsumer</module>
+        <module>platform-vcprocess</module>
+        <module>platform-vcdltcore</module>
+        <module>platform-r3ccore</module>
+        <module>platform-vccore</module>
+        <module>platform-sbcvcore</module>
+        <module>platform-iccore</module>
+        <module>platform-rchcore</module>
+        <module>platform-sbccore</module>
+        <module>platform-dlrretrycore</module>
+        <module>platform-dnrfallback</module>
+        <module>platform-dnr</module>
+        <module>platform-blockoutwalletconsumer</module>
+        <module>platform-sbpcore</module>
+        <module>platform-t2ecore</module>
+        <module>platform-dnt2tb</module>
+        <module>platform-subt2tb</module>
+        <module>platform-errorlogt2tb</module>
+        <module>platform-clienthandovert2tbweb</module>
+        <module>platform-messagetoolweb</module>
+        <module>platform-r3r</module>
+        <module>platform-dnnopayloadt2tb</module>
+        <module>platform-duplicatecheckremoval</module>
+        <module>platform-fullmsgt2tb</module>
+        <module>platform-interimfailuerst2tb</module>
+        <module>platform-dnrfallbackpoller</module>
+        <module>platform-smpputil</module>
+        <module>platform-smppdlrhandover</module>
+        <module>platform-smppdlrutil</module>
+        <module>platform-smppdlrpoller</module>
+        <module>platform-walletprepaidmigration</module>
+        <module>platform-promokannelrediscleaner</module>
+        <module>platform-dnpostlogt2tb</module>
+        <module>platform-prepaiduidata</module>
+        <module>platform-prepaiduIweb</module>
+        <module>platform-pendingpayloadcountexporter</module>
+        <module>platform-walletreminder</module>
+        <module>platform-customkafkaprocessor</module>
+        <module>platform-dlrpayloadgen</module>
 
+        <!--======= http interface  modules =======-->
+        <module>http-generichttpapidata</module>
+        <module>http-interfacefallback</module>
+        <module>http-interfaceutil</module>
+        <module>http-interfaceparameters</module>
+        <module>http-generichttpapiprocessor</module>
+        <module>http-interfacefallbackpoller</module>
+        <module>http-cloudutil</module>
+        <module>http-cloudacceptor</module>
+        <module>http-clouddataprocessor</module>
+        <module>http-generichttpapiweb</module>
+        <module>platform-httpasynprocessor</module>
+        <module>http-migrationapiweb</module>
     </modules>
 </project>
