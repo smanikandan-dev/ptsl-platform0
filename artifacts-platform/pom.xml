@@ -1,0 +1,65 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.ptsl.beacon</groupId>
+        <artifactId>ptsl-beacon-parent</artifactId>
+        <version>1.0.0</version>
+    </parent>
+    <artifactId>artifacts-platform</artifactId>
+    <version>1.0</version>
+    <packaging>pom</packaging>
+
+    <build>
+        <plugins>
+            <!-- Plugin to execute Ant tasks -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <executions>
+                    <execution>
+                        <id>clean-and-copy</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <tasks>
+                                <!-- Clean the deployables directory -->
+                                <delete dir="${project.basedir}/properties"/>
+                                <delete dir="${project.basedir}/interface-http"/>
+
+                                <!-- Create destination directories -->
+                                <mkdir dir="${project.basedir}/properties"/>
+                                <mkdir dir="${project.basedir}/interface-http"/>
+
+                                <!-- Copy properties directory to the first destination -->
+                                <copy todir="${project.basedir}/properties">
+                                    <fileset dir="${project.basedir}/../properties">
+                                        <include name="**/*"/>
+                                    </fileset>
+                                </copy>
+                                <!-- Copy JAR and WAR files to the first destination -->
+                                <copy todir="${project.basedir}/interface-http/">
+                                    <fileset dir="${project.basedir}/../http-generichttpapiweb/target">
+                                        <include name="*.war"/>
+                                    </fileset>
+                                    <fileset dir="${project.basedir}/../http-generichttpapiweb">
+                                        <include name="Dockerfile"/>
+                                        <include name="*.yml"/>
+                                        <include name="*.yaml"/>
+                                        <include name="logback.xml"/>
+                                        <include name="server.xml"/>
+                                    </fileset>
+                                </copy>
+
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

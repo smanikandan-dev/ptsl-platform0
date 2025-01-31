@@ -394,5 +394,8 @@
         <module>http-generichttpapiweb</module>
         <module>platform-httpasynprocessor</module>
         <module>http-migrationapiweb</module>
+
+        <module>artifacts-platform</module>
+
     </modules>
 </project>
