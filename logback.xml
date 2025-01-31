@@ -8,13 +8,13 @@
 
     <!-- Rolling File Appender for general logging -->
     <appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>/opt/tomcat/logs/httpinterface.log</file>
+        <file>/opt/tomcat/logs/app.log</file>
         <encoder>
             <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- daily rollover -->
-            <fileNamePattern>/opt/tomcat/logs/httpinterface.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>/opt/tomcat/logs/app.%d{yyyy-MM-dd}.log</fileNamePattern>
             <!-- keep 30 days' worth of history capped at 3GB total size -->
             <maxHistory>30</maxHistory>
             <totalSizeCap>3GB</totalSizeCap>

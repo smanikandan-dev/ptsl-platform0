@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  http-api:
+    image: dockerregistry:5000/httpapiweb:v1.0.0
+
+    container_name: http-api
+
+    environment:
+      - id=2
+      - _JAVA_OPTIONS=-Xmx512m -Xms256m -Dlogback.configurationFile=/opt/tomcat/conf/logback.xml
+      - profile=do2
+      - module=all
+      - hostname=10.122.0.5
+
+    ports:
+      - '8081:8080'
+
+    volumes:
+      - ./config/log4j2-common.xml:/log4j2-common.xml
+      - ./logs:/opt/tomcat/logs
+      - ./config/logging.properties:/opt/tomcat/conf/logging.properties
+      - ./config/logback.xml:/opt/tomcat/conf/logback.xml
+
+    restart: always

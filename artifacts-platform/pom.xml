@@ -26,23 +26,32 @@
                             <tasks>
                                 <!-- Clean the deployables directory -->
                                 <delete dir="${project.basedir}/properties"/>
+                                <delete dir="${project.basedir}/artifacts"/>
                                 <delete dir="${project.basedir}/interface-http"/>
 
                                 <!-- Create destination directories -->
                                 <mkdir dir="${project.basedir}/properties"/>
+                                <mkdir dir="${project.basedir}/artifacts"/>
                                 <mkdir dir="${project.basedir}/interface-http"/>
 
+                                <copy todir="${project.basedir}/">
+                                    <fileset dir="${project.basedir}/../http-generichttpapiweb/target">
+                                        <include name="build.sh"/>
+                                    </fileset>
+                                </copy>
                                 <!-- Copy properties directory to the first destination -->
                                 <copy todir="${project.basedir}/properties">
                                     <fileset dir="${project.basedir}/../properties">
                                         <include name="**/*"/>
                                     </fileset>
                                 </copy>
-                                <!-- Copy JAR and WAR files to the first destination -->
-                                <copy todir="${project.basedir}/interface-http/">
+                                <copy todir="${project.basedir}/artifacts">
                                     <fileset dir="${project.basedir}/../http-generichttpapiweb/target">
                                         <include name="*.war"/>
                                     </fileset>
+                                </copy>
+                                <!-- Copy JAR and WAR files to the first destination -->
+                                <copy todir="${project.basedir}/interface-http/">
                                     <fileset dir="${project.basedir}/../http-generichttpapiweb">
                                         <include name="Dockerfile"/>
                                         <include name="*.yml"/>
