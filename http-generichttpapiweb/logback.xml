@@ -1,4 +1,4 @@
-<configuration>
+<configuration scan="true" scanPeriod="30 seconds">
     <!-- Console Appender -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
@@ -13,11 +13,10 @@
             <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- daily rollover -->
+            <!-- Daily rollover -->
             <fileNamePattern>/opt/tomcat/logs/httpinterface.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <!-- keep 30 days' worth of history capped at 3GB total size -->
+            <!-- Keep 30 days' worth of history -->
             <maxHistory>30</maxHistory>
-            <totalSizeCap>3GB</totalSizeCap>
         </rollingPolicy>
     </appender>
 
@@ -31,9 +30,9 @@
             <level>ERROR</level>
         </filter>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <!-- daily rollover -->
+            <!-- Daily rollover -->
             <fileNamePattern>/opt/tomcat/logs/error.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <!-- keep 30 days' worth of history -->
+            <!-- Keep 30 days' worth of history -->
             <maxHistory>30</maxHistory>
         </rollingPolicy>
     </appender>
