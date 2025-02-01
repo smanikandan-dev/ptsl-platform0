@@ -2,7 +2,7 @@
     <!-- Console Appender -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - [%method] %msg%n</pattern>
         </encoder>
     </appender>
 
@@ -10,7 +10,7 @@
     <appender name="ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>/opt/tomcat/logs/httpinterface.log</file>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - [%method] %msg%n</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- Daily rollover -->
@@ -24,7 +24,7 @@
     <appender name="ERROR_ROLLING" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>/opt/tomcat/logs/error.log</file>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - [%method] %msg%n</pattern>
         </encoder>
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>ERROR</level>
@@ -37,10 +37,18 @@
         </rollingPolicy>
     </appender>
 
+    <!-- Logger specifically for ROLLING appender -->
+    <logger name="ROLLING_LOGGER" level="debug" additivity="false">
+        <appender-ref ref="ROLLING" />
+    </logger>
+
+    <!-- Logger specifically for ERROR_ROLLING appender -->
+    <logger name="ERROR_LOGGER" level="error" additivity="false">
+        <appender-ref ref="ERROR_ROLLING" />
+    </logger>
+
     <!-- Root Logger -->
     <root level="debug">
         <appender-ref ref="STDOUT" />
-        <appender-ref ref="ROLLING" />
-        <appender-ref ref="ERROR_ROLLING" />
     </root>
 </configuration>
