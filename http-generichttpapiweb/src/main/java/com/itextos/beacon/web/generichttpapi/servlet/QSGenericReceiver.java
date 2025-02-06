@@ -1,10 +1,5 @@
 package com.itextos.beacon.web.generichttpapi.servlet;
 
-import java.io.IOException;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import com.itextos.beacon.commonlib.apperrorhandler.servlets.BasicServlet;
 import com.itextos.beacon.commonlib.constants.InterfaceType;
 import com.itextos.beacon.commonlib.prometheusmetricsutil.PrometheusMetrics;
@@ -13,59 +8,56 @@ import com.itextos.beacon.http.generichttpapi.common.utils.Utility;
 import com.itextos.beacon.http.interfaceutil.MessageSource;
 import com.itextos.beacon.interfaces.generichttpapi.processor.reader.QSRequestReader;
 import com.itextos.beacon.interfaces.generichttpapi.processor.reader.RequestReader;
-//import com.itextos.beacon.smslog.QSReceiverLog;
-//import com.itextos.beacon.smslog.TimeTakenInterfaceLog;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 public class QSGenericReceiver
         extends
-        BasicServlet
-{
+        BasicServlet {
 
     private static final long serialVersionUID = -188048290390545145L;
 
-    private static final Log  log              = LogFactory.getLog(QSGenericReceiver.class);
+    private static final Logger logger = LoggerFactory.getLogger(QSGenericReceiver.class);
 
-    public QSGenericReceiver()
-    {}
+    public QSGenericReceiver() {
+    }
 
     @Override
     protected void doGet(
             HttpServletRequest aRequest,
             HttpServletResponse aResponse)
             throws ServletException,
-            IOException
-    {
-        if (log.isDebugEnabled())
-            log.debug("QS request received in doGet");
+            IOException {
+        if (logger.isDebugEnabled())
+            logger.debug("Incoming api request from remote {}", aRequest.getRemoteAddr());
 
-        StringBuffer sb=new StringBuffer();
-        
-        sb.append("\n##########################################\n");
-        sb.append("QS request received in doGet").append("\n");
-        
-        final long lProcessStart = System.currentTimeMillis();
+        // TODO: remove sb arg from below method
+        StringBuffer sb = new StringBuffer();
+
+        final long processStart = System.nanoTime();
         PrometheusMetrics.apiIncrementAcceptCount(InterfaceType.HTTP_JAPI, MessageSource.GENERIC_QS, APIConstants.CLUSTER_INSTANCE, aRequest.getRemoteAddr());
-        final RequestReader reader = new QSRequestReader(aRequest, aResponse, getServletName(), null,sb);
+        final RequestReader reader = new QSRequestReader(aRequest, aResponse, getServletName(), null, sb);
         reader.processGetRequest();
 
-        final long lProcessEnd   = System.currentTimeMillis();
-        final long lProcessTaken = lProcessEnd - lProcessStart;
+        final long processEnd = System.nanoTime();
+        final long processTaken = processEnd - processStart;
 
-        if (log.isInfoEnabled())
-            log.info("Request Start time : '" + Utility.getFormattedDateTime(lProcessStart) + "' End time : '" + Utility.getFormattedDateTime(lProcessEnd) + "' Processing time : '" + lProcessTaken
-                    + "' milliseconds");
-        sb.append("Request Start time : '" + Utility.getFormattedDateTime(lProcessStart) + "' End time : '" + Utility.getFormattedDateTime(lProcessEnd) + "' Processing time : '" + lProcessTaken
-                + "' milliseconds").append("\n");
+        // Convert nanoseconds to milliseconds if needed
+        final long processTakenMillis = processTaken / 1_000_000;
 
-        sb.append("\n##########################################\n");
 
-        log.debug("Request Start time : '" + Utility.getFormattedDateTime(lProcessStart) + "' End time : '" + Utility.getFormattedDateTime(lProcessEnd) + "' Processing time : '" + (lProcessEnd - lProcessStart)  + "' milliseconds");
+        if (logger.isDebugEnabled()) {
+            logger.debug("Request Start time : '{}' End time : '{}' Processing time : '{}' milliseconds",
+                    Utility.getFormattedDateTime(processStart / 1_000_000),  // Convert to milliseconds for logging
+                    Utility.getFormattedDateTime(processEnd / 1_000_000),    // Convert to milliseconds for logging
+                    processTakenMillis);
+        }
 
-        log.debug(sb.toString());
     }
 
     @Override
@@ -73,8 +65,7 @@ public class QSGenericReceiver
             HttpServletRequest arg0,
             HttpServletResponse arg1)
             throws ServletException,
-            IOException
-    {
+            IOException {
         doGet(arg0, arg1);
     }
 

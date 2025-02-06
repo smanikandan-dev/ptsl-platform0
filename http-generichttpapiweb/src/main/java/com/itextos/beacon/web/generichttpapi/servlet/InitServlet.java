@@ -55,8 +55,9 @@ public final class InitServlet extends BasicServlet {
 
             APIConstants.setAppInstanceId(lAppInstanceId);
 
+            // TODO: come back
             if (APIConstants.CLUSTER_INSTANCE == null) {
-                logger.error("InitServlet.inti() - Instance Cluster value is not Configured..., Hence Stoping the Instance.");
+                logger.error("InitServlet.inti() - Instance Cluster value is not Configured..., Hence Stopping the Instance.");
                 //  System.exit(-1);
             }
 
@@ -65,7 +66,7 @@ public final class InitServlet extends BasicServlet {
             // startConsumers();
         }
         catch (final Exception e) {
-            logger.error("InitServlet.inti() - Error while gettting appInstance ID from property file due to ....", e);
+            logger.error("Error while getting appInstance ID from property file ....", e);
         }
     }
 

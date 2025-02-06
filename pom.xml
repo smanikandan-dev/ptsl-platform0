@@ -380,6 +380,7 @@
         <module>platform-walletreminder</module>
         <module>platform-customkafkaprocessor</module>
         <module>platform-dlrpayloadgen</module>
+        <module>platform-mccmncload</module>
 
         <!--======= http interface  modules =======-->
         <module>http-generichttpapidata</module>
@@ -394,6 +395,15 @@
         <module>http-generichttpapiweb</module>
         <module>platform-httpasynprocessor</module>
         <module>http-migrationapiweb</module>
+
+        <!--======= smpp interface  modules =======-->
+<!--        <module>smpp-concatenate</module>-->
+<!--        <module>smpp-dboperations</module>-->
+<!--        <module>smpp-interfaces</module>-->
+<!--        <module>smpp-objects</module>-->
+<!--        <module>smpp-redisoperations</module>-->
+<!--        <module>smpp-utils</module>-->
+
 
         <module>artifacts-platform</module>
 

@@ -27,12 +27,13 @@ import com.itextos.beacon.http.interfaceutil.InterfaceUtil;
 import com.itextos.beacon.inmemory.encryptinfo.CustomerEncryptUtil;
 import com.itextos.beacon.inmemory.encryptinfo.EncryptInfo;
 import com.itextos.beacon.inmemory.interfaces.util.IInterfaceUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MessageValidater
 {
 
-    private static final Log       log = LogFactory.getLog(MessageValidater.class);
-
+    private static final Logger logger = LoggerFactory.getLogger(MessageValidater.class);
     private final BasicInfo        mBasicInfo;
     private final InterfaceMessage mInterfaceMessage;
 
@@ -57,8 +58,8 @@ public class MessageValidater
         final InterfaceStatusCode    lClientStatusCode = validateMessageRequest();
         final InterfaceRequestStatus lRequestStatus    = new InterfaceRequestStatus(lClientStatusCode, null);
 
-        if (log.isDebugEnabled())
-            log.debug("Message object status after validation:  '" + lRequestStatus + "'");
+        if (logger.isDebugEnabled())
+            logger.debug("Message object status after validation:  '" + lRequestStatus + "'");
 
         mInterfaceMessage.setRequestStatus(lRequestStatus);
         return lClientStatusCode;
@@ -86,13 +87,13 @@ public class MessageValidater
 
             boolean      isMsgIdenAllow   = CommonUtility.isEnabled(CommonUtility.nullCheck(mBasicInfo.getUserAccountInfo().get(MiddlewareConstant.MW_UC_IDEN_ALLOW.getName())));
 
-            if (log.isDebugEnabled())
-                log.debug("Acc UC Identification Allow : " + isMsgIdenAllow);
+            if (logger.isDebugEnabled())
+                logger.debug("Acc UC Identification Allow : " + isMsgIdenAllow);
 
             final boolean isReqHexMsg = CommonUtility.isEnabled(CommonUtility.nullCheck(mBasicInfo.getUserAccountInfo().get(MiddlewareConstant.MW_REQ_HEX_MSG.getName())));
 
-            if (log.isDebugEnabled())
-                log.debug("Acc Request Hex Message : " + isReqHexMsg);
+            if (logger.isDebugEnabled())
+                logger.debug("Acc Request Hex Message : " + isReqHexMsg);
 
             if (isReqHexMsg)
             {
@@ -150,7 +151,7 @@ public class MessageValidater
         }
         catch (final Exception e)
         {
-            log.error("Exception occured while message object validation ", e);
+            logger.error("Exception occured while message object validation ", e);
             return InterfaceStatusCode.INTERNAL_SERVER_ERROR;
         }
         return InterfaceStatusCode.SUCCESS;
@@ -219,8 +220,8 @@ public class MessageValidater
 
         if (lMobileNumber.isBlank())
         {
-            if (log.isDebugEnabled())
-                log.debug("Destination is empty:  '" + lMobileNumber + "'");
+            if (logger.isDebugEnabled())
+                logger.debug("Destination is empty:  '" + lMobileNumber + "'");
             sb.append("Destination is empty:  '" + lMobileNumber + "' InterfaceStatusCode.DESTINATION_EMPTY :"+ InterfaceStatusCode.DESTINATION_EMPTY).append("\n");
             
 //            HttpInterfaceLog.getInstance(mBasicInfo.getClientId()).log(mBasicInfo.getClientId(), mBasicInfo.getFileId()+ " : InterfaceStatusCode.DESTINATION_EMPTY : "+aDestination);
@@ -240,7 +241,7 @@ public class MessageValidater
 
             sb.append("Exception occured while decrypting destination...InterfaceStatusCode.DESTINATION_INVALID : "+InterfaceStatusCode.DESTINATION_INVALID).append("\t").append(ErrorMessage.getStackTraceAsString(e1)).append("\n");
             		
-            log.error("Exception occured while decrypting destination...", e1);
+            logger.error("Exception occured while decrypting destination...", e1);
             
 //            HttpInterfaceLog.getInstance(mBasicInfo.getClientId()).log(mBasicInfo.getClientId(), mBasicInfo.getFileId()+ " : Exception occured while decrypting destination...InterfaceStatusCode.DESTINATION_INVALID : "+InterfaceStatusCode.DESTINATION_INVALID);
 
@@ -252,13 +253,13 @@ public class MessageValidater
          * final String lAccDefaultCountryCD =
          * CommonUtility.nullCheck(mBasicInfo.getUserAccountInfo().get(
          * MiddlewareConstant.MW_DEFAULT_COUNTRY_CODE.getName()), true);
-         * if (log.isDebugEnabled())
-         * log.debug("Account Default Country Table : " + lAccDefaultCountryCD);
+         * if (logger.isDebugEnabled())
+         * logger.debug("Account Default Country Table : " + lAccDefaultCountryCD);
          */
         final String lCountryCD = InterfaceUtil.getDefaultCountryCode();
 
-        if (log.isDebugEnabled())
-            log.debug("Default Contury From Config Values : " + lCountryCD);
+        if (logger.isDebugEnabled())
+            logger.debug("Default Contury From Config Values : " + lCountryCD);
         
         
 //        HttpInterfaceLog.getInstance(mBasicInfo.getClientId()).log(mBasicInfo.getClientId(), mBasicInfo.getFileId()+ " : Default Country From Config Values : " + lCountryCD);
@@ -267,8 +268,8 @@ public class MessageValidater
         // lCountryCD = (!lAccDefaultCountryCD.isEmpty()) ? lAccDefaultCountryCD :
         // lCountryCD;
 
-        if (log.isDebugEnabled())
-            log.debug("Validate Country Code :" + lCountryCD);
+        if (logger.isDebugEnabled())
+            logger.debug("Validate Country Code :" + lCountryCD);
 
 //        HttpInterfaceLog.getInstance(mBasicInfo.getClientId()).log(mBasicInfo.getClientId(), mBasicInfo.getFileId()+" : Validate Country Code : " + lCountryCD);
 
@@ -306,8 +307,8 @@ public class MessageValidater
         
         try
         {
-            if (log.isDebugEnabled())
-                log.debug("Mobile Number Validation Details :" + lMobileValidator.toString());
+            if (logger.isDebugEnabled())
+                logger.debug("Mobile Number Validation Details :" + lMobileValidator.toString());
             
             sb.append("\n").append(Name.getLineNumber()).append("\t").append(Name.getClassName()).append("\t").append(Name.getCurrentMethodName()).append("Mobile Number Validation Details :" + lMobileValidator.toString()); 
 
@@ -320,8 +321,8 @@ public class MessageValidater
 
             if (isValidMobileNumber)
             {
-                if (log.isDebugEnabled())
-                    log.debug("The given number  " + mInterfaceMessage.getMobileNumber() + " is International Number ? " + lMobileValidator.isIntlMobileNumber());
+                if (logger.isDebugEnabled())
+                    logger.debug("The given number  " + mInterfaceMessage.getMobileNumber() + " is International Number ? " + lMobileValidator.isIntlMobileNumber());
                 RouteType lRouteType = null;
 
                 if (lMobileValidator.isIntlMobileNumber())
@@ -348,8 +349,8 @@ public class MessageValidater
         }
         catch (final Exception e)
         {
-            if (log.isDebugEnabled())
-                log.debug("exception while parsing number as long  :  '" + lMobileNumber + "'", e);
+            if (logger.isDebugEnabled())
+                logger.debug("exception while parsing number as long  :  '" + lMobileNumber + "'", e);
 
             sb.append("\n").append(Name.getLineNumber()).append("\t").append(Name.getClassName()).append("\t").append(Name.getCurrentMethodName()).append("exception while parsing number as long  :  '" + lMobileNumber + "'"+ ErrorMessage.getStackTraceAsString(e)); 
 
@@ -365,30 +366,30 @@ public class MessageValidater
         final JSONObject    lUserDetails  = mBasicInfo.getUserAccountInfo();
         InterfaceStatusCode lClientStatus = InterfaceStatusCode.SUCCESS;
 
-        if (log.isDebugEnabled())
-            log.debug("Before Trai Blockout time :  '" + aScheduleTime + "  '");
+        if (logger.isDebugEnabled())
+            logger.debug("Before Trai Blockout time :  '" + aScheduleTime + "  '");
 
         if (Utility.isPromotionalMessage((String) lUserDetails.get(MiddlewareConstant.MW_MSG_TYPE.getName())))
         {
             final RouteType lRouteType = mInterfaceMessage.getRouteType();
 
-            if (log.isDebugEnabled())
-                log.debug("user message type :  'promotional' Route Type " + lRouteType);
+            if (logger.isDebugEnabled())
+                logger.debug("user message type :  'promotional' Route Type " + lRouteType);
 
             if (lRouteType == RouteType.DOMESTIC)
             {
-                if (log.isDebugEnabled())
-                    log.debug("The number belongs to Domastic series. ");
+                if (logger.isDebugEnabled())
+                    logger.debug("The number belongs to Domastic series. ");
 
                 lClientStatus = TraiBlockoutCheck.isValidTraiBlockOut(aScheduleTime, mBasicInfo);
 
-                if (log.isDebugEnabled())
-                    log.debug("After validate trai blockout status :  '" + lClientStatus + " ' and time :'" + aScheduleTime + "'");
+                if (logger.isDebugEnabled())
+                    logger.debug("After validate trai blockout status :  '" + lClientStatus + " ' and time :'" + aScheduleTime + "'");
             }
             else
             {
-                if (log.isDebugEnabled())
-                    log.debug("The number is internartional series  '");
+                if (logger.isDebugEnabled())
+                    logger.debug("The number is internartional series  '");
 
                 lClientStatus = InterfaceStatusCode.SUCCESS;
             }
@@ -401,8 +402,8 @@ public class MessageValidater
             String aEncryptString)
             throws Exception
     {
-        if (log.isDebugEnabled())
-            log.debug("Encrypt String :" + aEncryptString);
+        if (logger.isDebugEnabled())
+            logger.debug("Encrypt String :" + aEncryptString);
         
         
         sb.append("\n").append(Name.getLineNumber()).append("\t").append(Name.getClassName()).append("\t").append(Name.getCurrentMethodName()); 
@@ -422,14 +423,14 @@ public class MessageValidater
 
                 final String lDecryptedStr = CustomerEncryptUtil.decryptIncomingString(lClientId, aEncryptString);
 
-                if (log.isDebugEnabled())
-                    log.debug("After decrypt the string for client '" + lClientId + "' :: String: " + lDecryptedStr);
+                if (logger.isDebugEnabled())
+                    logger.debug("After decrypt the string for client '" + lClientId + "' :: String: " + lDecryptedStr);
 
                 return lDecryptedStr;
             }
             catch (final Exception e)
             {
-                log.error("Exception occured while encryption ");
+                logger.error("Exception occured while encryption ");
                 throw e;
             }
         }
@@ -456,16 +457,16 @@ public class MessageValidater
     private InterfaceStatusCode processTemplateMessage(
             String aTemplateId)
     {
-        if (log.isDebugEnabled())
-            log.debug("Template Id: '" + aTemplateId + "'");
+        if (logger.isDebugEnabled())
+            logger.debug("Template Id: '" + aTemplateId + "'");
 
         sb.append("\n").append(Name.getLineNumber()).append("\t").append(Name.getClassName()).append("\t").append(Name.getCurrentMethodName()); 
 
         final String[] lTemplateValues = mInterfaceMessage.getTemplateValues();
         final String   lTemplate       = IInterfaceUtil.getInterfaceSMSTeamplate((String) mBasicInfo.getUserAccountInfo().get(MiddlewareConstant.MW_CLIENT_ID.getName()), aTemplateId);
 
-        if (log.isDebugEnabled())
-            log.debug("template from db:  '" + lTemplate + "'");
+        if (logger.isDebugEnabled())
+            logger.debug("template from db:  '" + lTemplate + "'");
 
         if (lTemplate == null) {
             sb.append("INVALID_TEMPLATEID" ).append("\n");
@@ -487,21 +488,21 @@ public class MessageValidater
 
         if ((!InterfaceMessageClass.UNICODE_HEX.getMessageType().equalsIgnoreCase(lMsgTypeHex)) && mInterfaceMessage.getMsgType().equalsIgnoreCase(InterfaceMessageClass.UNICODE.getMessageType()))
         {
-            if (log.isDebugEnabled())
-                log.debug("Message Type is unicode:  '" + mInterfaceMessage.getMsgType() + "'");
+            if (logger.isDebugEnabled())
+                logger.debug("Message Type is unicode:  '" + mInterfaceMessage.getMsgType() + "'");
 
             lHexTemplateValues = getTemplateValuesUnicodeHex(lTemplateValues);
 
-            if (log.isDebugEnabled())
-                log.debug("template values :  '" + lHexTemplateValues + "'");
+            if (logger.isDebugEnabled())
+                logger.debug("template values :  '" + lHexTemplateValues + "'");
         }
         else
             lHexTemplateValues = lTemplateValues;
 
         final String lMessage = MessageFormat.format(lTemplate, lHexTemplateValues);
 
-        if (log.isDebugEnabled())
-            log.debug("After replace Template Message : " + lMessage);
+        if (logger.isDebugEnabled())
+            logger.debug("After replace Template Message : " + lMessage);
 
         mInterfaceMessage.setMessage(lMessage);
         return InterfaceStatusCode.SUCCESS;
@@ -536,14 +537,14 @@ public class MessageValidater
         if (isMsgIdenAllow)
         {
             final boolean isMsgUC = Utility.isMessageContainsUnicode(lMessage, mInterfaceMessage, mBasicInfo);
-            if (log.isDebugEnabled())
-                log.debug("Is the request Message is Unicode : " + isMsgUC + " :: Message : " + mInterfaceMessage.getMessage());
+            if (logger.isDebugEnabled())
+                logger.debug("Is the request Message is Unicode : " + isMsgUC + " :: Message : " + mInterfaceMessage.getMessage());
 
             lMessage = mInterfaceMessage.getMessage();
 
             if (isMsgUC)
                 /*
-                 * if (log.isDebugEnabled())
+                 * if (logger.isDebugEnabled())
                  * lMessage = Utility.processUnicodeMessage(mInterfaceMessage.getMessage());
                  */
                 mInterfaceMessage.setMsgType(InterfaceMessageClass.UNICODE.getKey());
@@ -552,26 +553,26 @@ public class MessageValidater
         }
 
         final String lMsgType = CommonUtility.nullCheck(mInterfaceMessage.getMsgType(), true);
-        if (log.isDebugEnabled())
-            log.debug("Message Type is unicode : '" + lMsgType + "'");
+        if (logger.isDebugEnabled())
+            logger.debug("Message Type is unicode : '" + lMsgType + "'");
 
         final String lMsgTypeHex = CommonUtility.nullCheck(mInterfaceMessage.getMegTypeHex(), true);
 
-        if (log.isDebugEnabled())
-            log.debug("Message Type Hex is unicode : '" + lMsgTypeHex + "'");
+        if (logger.isDebugEnabled())
+            logger.debug("Message Type Hex is unicode : '" + lMsgTypeHex + "'");
 
         if ((!lMsgTypeHex.equalsIgnoreCase(InterfaceMessageClass.UNICODE_HEX.getMessageType()))
                 && (lMsgType.equalsIgnoreCase(InterfaceMessageClass.UNICODE.getMessageType()) || lMsgType.equalsIgnoreCase(InterfaceMessageClass.FLASH_UNICODE.getMessageType())))
         {
-            if (log.isDebugEnabled())
-                log.debug("Message contains VL ? : '" + (mInterfaceMessage.getMessage().toUpperCase().contains("[~VL:")) + "'");
+            if (logger.isDebugEnabled())
+                logger.debug("Message contains VL ? : '" + (mInterfaceMessage.getMessage().toUpperCase().contains("[~VL:")) + "'");
 
             if (mInterfaceMessage.getMessage().toUpperCase().contains("[~VL:"))
                 lMessage = Utility.convertStringAloneWithoutVLIntoHex(mInterfaceMessage.getMessage());
             else
             {
-                if (log.isDebugEnabled())
-                    log.debug("Ingnore the conversion when MsgIdenAllow case ..............");
+                if (logger.isDebugEnabled())
+                    logger.debug("Ingnore the conversion when MsgIdenAllow case ..............");
                 if (!isMsgIdenAllow)
                     lMessage = Utility.processUnicodeMessage(lMessage);
             }
@@ -591,8 +592,8 @@ public class MessageValidater
     private  InterfaceStatusCode validateHeader(
             String aHeader)
     {
-        if (log.isDebugEnabled())
-            log.debug("Sender Id: '" + aHeader + "'");
+        if (logger.isDebugEnabled())
+            logger.debug("Sender Id: '" + aHeader + "'");
 
         sb.append("\n").append(Name.getLineNumber()).append("\t").append(Name.getClassName()).append("\t").append(Name.getCurrentMethodName()); 
 
@@ -618,15 +619,15 @@ public class MessageValidater
 
             if (lIntMsgExpiry <= 0)
             {
-                if (log.isDebugEnabled())
-                    log.debug("Invalid validity period while parsing vp as integer:  '" + aMsgExpiry + "'");
+                if (logger.isDebugEnabled())
+                    logger.debug("Invalid validity period while parsing vp as integer:  '" + aMsgExpiry + "'");
                 return InterfaceStatusCode.EXPIRY_MINUTES_INVALID;
             }
 
             if ((lIntMsgExpiry < APIConstants.VP_MIN_VALUE) || (lIntMsgExpiry > APIConstants.VP_MAX_VALUE))
             {
-                if (log.isDebugEnabled())
-                    log.debug("Invalid validity period :  '" + aMsgExpiry + "'");
+                if (logger.isDebugEnabled())
+                    logger.debug("Invalid validity period :  '" + aMsgExpiry + "'");
 
                 return InterfaceStatusCode.EXPIRY_MINUTES_BEYOUND_TIME_BOUNDRY;
             }
@@ -648,13 +649,13 @@ public class MessageValidater
         if (!aMsgType.isBlank() && (aMsgType).equalsIgnoreCase(InterfaceMessageClass.ADVANCE.getMessageType()))
             if (aDcs.isBlank())
             {
-                if (log.isDebugEnabled())
-                    log.debug("empty dcs:  '" + aDcs + "'");
+                if (logger.isDebugEnabled())
+                    logger.debug("empty dcs:  '" + aDcs + "'");
                 return InterfaceStatusCode.DCS_INVALID;
             }
 
-        if (log.isDebugEnabled())
-            log.debug("Message Type : '" + aMsgType + "'  MsgType Length: '" + aMsgType.length() + "'");
+        if (logger.isDebugEnabled())
+            logger.debug("Message Type : '" + aMsgType + "'  MsgType Length: '" + aMsgType.length() + "'");
 
         if (!aMsgType.isBlank())
         {
@@ -662,8 +663,8 @@ public class MessageValidater
 
             if (msgTypeStatus != InterfaceStatusCode.SUCCESS)
             {
-                if (log.isDebugEnabled())
-                    log.debug("message type is not valid: '" + aMsgType + "'");
+                if (logger.isDebugEnabled())
+                    logger.debug("message type is not valid: '" + aMsgType + "'");
 
                 return InterfaceStatusCode.INVALID_MSGTYPE;
             }
@@ -679,8 +680,8 @@ public class MessageValidater
 
         if (!aAppCountry.isBlank() && (!(aAppCountry.equals("1")) && !(aAppCountry.equals("0"))))
         {
-            if (log.isDebugEnabled())
-                log.debug("append country option is invalid:  '" + aAppCountry + "'");
+            if (logger.isDebugEnabled())
+                logger.debug("append country option is invalid:  '" + aAppCountry + "'");
             
            sb.append("append country option is invalid:  '" + aAppCountry + "'  InterfaceStatusCode.COUNTRY_CODE_INVALID_APPEND").append(InterfaceStatusCode.COUNTRY_CODE_INVALID_APPEND).append("\n");
 
@@ -699,8 +700,8 @@ public class MessageValidater
 
         if (isAppendCountryCode && lCountryCode.isBlank())
         {
-            if (log.isDebugEnabled())
-                log.debug("append country code is invalid:  '" + lCountryCode + "'");
+            if (logger.isDebugEnabled())
+                logger.debug("append country code is invalid:  '" + lCountryCode + "'");
 
             return InterfaceStatusCode.INVALID_COUNTRY_CODE;
         }
@@ -711,8 +712,8 @@ public class MessageValidater
             String aDestinationPort,
             String aMsgType)
     {
-        if (log.isDebugEnabled())
-            log.debug("Special Port : " + aDestinationPort);
+        if (logger.isDebugEnabled())
+            logger.debug("Special Port : " + aDestinationPort);
 
         sb.append("\n").append(Name.getLineNumber()).append("\t").append(Name.getClassName()).append("\t").append(Name.getCurrentMethodName()); 
 
@@ -722,8 +723,8 @@ public class MessageValidater
 
             if ((lIntPort <= 0) || ((lIntPort <= APIConstants.PORT_MIN_VALUE) || (lIntPort > APIConstants.PORT_MAX_VALUE)))
             {
-                if (log.isDebugEnabled())
-                    log.debug("port is not valid:  '" + lIntPort + "'");
+                if (logger.isDebugEnabled())
+                    logger.debug("port is not valid:  '" + lIntPort + "'");
 
                 return InterfaceStatusCode.PORT_INVALID;
             }
@@ -743,8 +744,8 @@ public class MessageValidater
 
         if (!aUrlTrack.isBlank() && (!(aUrlTrack.equals("1")) && !(aUrlTrack.equals("0"))))
         {
-            if (log.isDebugEnabled())
-                log.debug("url track option is invalid:  '" + aUrlTrack + "'");
+            if (logger.isDebugEnabled())
+                logger.debug("url track option is invalid:  '" + aUrlTrack + "'");
 
             return InterfaceStatusCode.URLTRACK_INVALID_OPTION;
         }
@@ -759,8 +760,8 @@ public class MessageValidater
 
         if (!aCustomerRefrenceNum.isBlank() && (aCustomerRefrenceNum.length() > APIConstants.CUST_REF_MAX_VALUE))
         {
-            if (log.isDebugEnabled())
-                log.debug("Customer Refrence Number is greate than max value:  '" + aCustomerRefrenceNum + "'");
+            if (logger.isDebugEnabled())
+                logger.debug("Customer Refrence Number is greate than max value:  '" + aCustomerRefrenceNum + "'");
 
             return InterfaceStatusCode.CUST_REFERENCE_ID_INVALID_LENGTH;
         }
@@ -774,8 +775,8 @@ public class MessageValidater
 
         final InterfaceMessageClass lMessageType = InterfaceMessageClass.getMessageType(aMsgType);
 
-        if (log.isDebugEnabled())
-            log.debug("Validate message type  '" + aMsgType + "' and Message Type Value '" + lMessageType + "'");
+        if (logger.isDebugEnabled())
+            logger.debug("Validate message type  '" + aMsgType + "' and Message Type Value '" + lMessageType + "'");
 
         if (lMessageType == null)
             return InterfaceStatusCode.INVALID_MSGTYPE;

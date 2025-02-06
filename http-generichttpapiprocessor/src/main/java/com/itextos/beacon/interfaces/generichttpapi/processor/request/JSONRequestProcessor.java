@@ -1,19 +1,6 @@
 package com.itextos.beacon.interfaces.generichttpapi.processor.request;
 
-import java.util.Date;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import com.itextos.beacon.commonlib.constants.ConfigParamConstants;
-import com.itextos.beacon.commonlib.constants.Constants;
-import com.itextos.beacon.commonlib.constants.DateTimeFormat;
-import com.itextos.beacon.commonlib.constants.ErrorMessage;
-import com.itextos.beacon.commonlib.constants.InterfaceStatusCode;
-import com.itextos.beacon.commonlib.constants.MiddlewareConstant;
-import com.itextos.beacon.commonlib.constants.RouteType;
+import com.itextos.beacon.commonlib.constants.*;
 import com.itextos.beacon.commonlib.constants.exception.ItextosException;
 import com.itextos.beacon.commonlib.utility.CommonUtility;
 import com.itextos.beacon.commonlib.utility.DateTimeUtility;
@@ -29,50 +16,104 @@ import com.itextos.beacon.interfaces.generichttpapi.processor.handover.Middlewar
 import com.itextos.beacon.interfaces.generichttpapi.processor.response.GenerateJSONResponse;
 import com.itextos.beacon.interfaces.generichttpapi.processor.response.GenerateQueryStringResponse;
 import com.itextos.beacon.interfaces.generichttpapi.processor.validate.MessageValidater;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Date;
 
 public class JSONRequestProcessor
         extends
-        AbstractRequestProcessor
-{
+        AbstractRequestProcessor {
 
-    private static final Log log           = LogFactory.getLog(JSONRequestProcessor.class);
-    private JSONArray        mMessageArray = null;
+    private static final Logger logger = LoggerFactory.getLogger(JSONRequestProcessor.class);
+    StringBuffer sb = null;
+    private JSONArray mMessageArray = null;
 
-    StringBuffer sb=null;
- 
     public JSONRequestProcessor(
             String aRequestString,
             String aCustomerIP,
             long aRequestedTime,
             String aReqType,
             String aResponseType,
-            StringBuffer sb)
-    {
+            StringBuffer sb) {
         super(aRequestString, aCustomerIP, aRequestedTime, aReqType, aResponseType);
-        
-        sb.append(" JSONRequestProcessor : aRequestString : "+aRequestString +"  aResponseType : "+aResponseType).append("\n");
 
-        this.sb=sb;
+
+        this.sb = sb;
         if (MessageSource.GENERIC_QS.equals(aResponseType))
             mResponseProcessor = new GenerateQueryStringResponse(aCustomerIP);
+        else if (MessageSource.GENERIC_JSON.equals(aResponseType))
+            mResponseProcessor = new GenerateJSONResponse(aCustomerIP);
         else
-            if (MessageSource.GENERIC_JSON.equals(aResponseType))
-                mResponseProcessor = new GenerateJSONResponse(aCustomerIP);
-            else
-                log.error("Invalid Request Type specified. Response Type '" + aResponseType + "'");
+            logger.error("Invalid Request Type specified. Response Type '" + aResponseType + "'");
+    }
+
+    private static void processAuthRequest(
+            String aAuthorization,
+            JSONObject aJsonObject) {
+
+        if (aAuthorization != null) {
+            String[] key = null;
+
+            try {
+                key = Utility.getAccessKey(aAuthorization);
+
+                if (logger.isDebugEnabled())
+                    logger.debug("Authorization value after decode : " + key);
+            }
+            catch (final Exception e) {
+                logger.error("Invalid authorization value", e);
+            }
+
+            if ((key != null) && (key.length == 2)) {
+                aJsonObject.put(InterfaceInputParameters.REQ_PARAMETER_USERNAME, CommonUtility.nullCheck(key[0]));
+                aJsonObject.put(InterfaceInputParameters.REQ_PARAMETER_KEY, CommonUtility.nullCheck(key[1]));
+            }
+        }
+    }
+
+    private static void setTemplateMessageValues(
+            JSONObject aJsonMessage,
+            InterfaceMessage aMessageBean) {
+        JSONArray lTemplateValues = null;
+
+        try {
+            lTemplateValues = (JSONArray) aJsonMessage.get(InterfaceInputParameters.REQ_PARAMETER_TEMPLATE_VALUES);
+
+            final int lIntReqTemplateParamSize = lTemplateValues.size();
+
+            if (logger.isDebugEnabled())
+                logger.debug("Template Values size : " + lIntReqTemplateParamSize);
+
+            final int lIntTemplateMaxParamSize = Utility.getConfigParamsValueAsInt(ConfigParamConstants.SMS_TEMPLATE_MAX_PARAMS);
+
+            final String[] values = new String[lIntTemplateMaxParamSize];
+
+            if ((lTemplateValues != null) && (lIntReqTemplateParamSize > 0)) {
+                for (int i = 0; i < lIntTemplateMaxParamSize; i++)
+                    if (i >= lIntReqTemplateParamSize)
+                        values[i] = "";
+                    else
+                        values[i] = (String) lTemplateValues.get(i);
+                aMessageBean.setTemplateValues(values);
+            }
+        }
+        catch (final Exception e) {
+            logger.info("template value is missing");
+        }
     }
 
     @Override
     public void parseBasicInfo(
             String authorization)
-            throws ItextosException
-    {
+            throws ItextosException {
 
-        try
-        {
+        try {
             final JSONObject lJsonObject = Utility.parseJSON(mRequestString);
-            if (log.isDebugEnabled())
-                log.debug("JSON Object in Parse Basic Info : - " + lJsonObject);
+            if (logger.isDebugEnabled())
+                logger.debug("JSON Object in Parse Basic Info : - " + lJsonObject);
             String lServletName = Utility.getJSONValue(lJsonObject, "servletName");
 
             if (null == lServletName)
@@ -80,62 +121,30 @@ public class JSONRequestProcessor
 
             mResponseProcessor.setServletContext(lServletName);
 
-            if (!(lJsonObject.containsKey(InterfaceInputParameters.REQ_PARAMETER_KEY)))
-            {
-                if (log.isDebugEnabled())
-                    log.debug("Basic Authorization value  : " + authorization);
+            if (!(lJsonObject.containsKey(InterfaceInputParameters.REQ_PARAMETER_KEY))) {
+                if (logger.isDebugEnabled())
+                    logger.debug("Basic Authorization value  : " + authorization);
 
                 processAuthRequest(authorization, lJsonObject);
             }
 
-            mParsedJson    = lJsonObject;
+            mParsedJson = lJsonObject;
             mRequestString = mParsedJson.toString();
 
             parseJSONString();
         }
-        catch (final Exception e)
-        {
+        catch (final Exception e) {
             final String err = "Exception while parsing the JSON. JSONString : '" + mRequestString + "'";
-            log.error(err, e);
+            logger.error(err, e);
             throw new ItextosException(err, e);
         }
     }
 
-    private static void processAuthRequest(
-            String aAuthorization,
-            JSONObject aJsonObject)
-    {
-
-        if (aAuthorization != null)
-        {
-            String[] key = null;
-
-            try
-            {
-                key = Utility.getAccessKey(aAuthorization);
-
-                if (log.isDebugEnabled())
-                    log.debug("Authorization value after decode : " + key);
-            }
-            catch (final Exception e)
-            {
-                log.error("Invalid authorization value", e);
-            }
-
-            if ((key != null) && (key.length == 2))
-            {
-                aJsonObject.put(InterfaceInputParameters.REQ_PARAMETER_USERNAME, CommonUtility.nullCheck(key[0]));
-                aJsonObject.put(InterfaceInputParameters.REQ_PARAMETER_KEY, CommonUtility.nullCheck(key[1]));
-            }
-        }
-    }
-
-    private void parseJSONString()
-    {
-        final String lVersion      = CommonUtility.nullCheck(Utility.getJSONValue(mParsedJson, InterfaceInputParameters.REQ_PARAMETER_VERSION), true);
-        final String lAccessKey    = CommonUtility.nullCheck(Utility.getJSONValue(mParsedJson, InterfaceInputParameters.REQ_PARAMETER_KEY), true);
+    private void parseJSONString() {
+        final String lVersion = CommonUtility.nullCheck(Utility.getJSONValue(mParsedJson, InterfaceInputParameters.REQ_PARAMETER_VERSION), true);
+        final String lAccessKey = CommonUtility.nullCheck(Utility.getJSONValue(mParsedJson, InterfaceInputParameters.REQ_PARAMETER_KEY), true);
         final String lReportingKey = CommonUtility.nullCheck(Utility.getJSONValue(mParsedJson, InterfaceInputParameters.REQ_PARAMETER_REPORTING_KEY), true);
-        final String lEncrypt      = CommonUtility.nullCheck(Utility.getJSONValue(mParsedJson, InterfaceInputParameters.REQ_PARAMETER_ENCRYPTED), true);
+        final String lEncrypt = CommonUtility.nullCheck(Utility.getJSONValue(mParsedJson, InterfaceInputParameters.REQ_PARAMETER_ENCRYPTED), true);
         final String lScheduleTime = CommonUtility.nullCheck(Utility.getJSONValue(mParsedJson, InterfaceInputParameters.REQ_PARAMETER_SCHEDULE_AT), true);
 
         mBasicInfo = new BasicInfo(lVersion, lAccessKey, lEncrypt, lScheduleTime, mCustIp, mRequestedTime);
@@ -148,18 +157,16 @@ public class JSONRequestProcessor
 
         mResponseProcessor.setServletContext(servletName);
 
-        if (log.isDebugEnabled())
-            log.debug("Basic Info :  '" + mBasicInfo + "'");
+        if (logger.isDebugEnabled())
+            logger.debug("Basic Info :  '" + mBasicInfo + "'");
     }
 
     public void processFromQueue(
             JSONObject aParsedjson,
             String aFileId,
-            String lClientId)
-    {
+            String lClientId) {
 
-        try
-        {
+        try {
             mParsedJson = aParsedjson;
             parseJSONString();
 
@@ -169,7 +176,7 @@ public class JSONRequestProcessor
 
             mResponseProcessor.setUname(lUserName);
 
-            final String lTimeZone     = CommonUtility.nullCheck(mBasicInfo.getUserAccountInfo().get(MiddlewareConstant.MW_TIME_ZONE.getName()));
+            final String lTimeZone = CommonUtility.nullCheck(mBasicInfo.getUserAccountInfo().get(MiddlewareConstant.MW_TIME_ZONE.getName()));
             final String lScheduleTime = CommonUtility.nullCheck(mBasicInfo.getScheduleTime());
 
             if (!lScheduleTime.isBlank() && !lTimeZone.isBlank())
@@ -179,81 +186,63 @@ public class JSONRequestProcessor
             getMessagesCount();
             getMultipleMessages(true);
         }
-        catch (final Exception e)
-        {
+        catch (final Exception e) {
             e.printStackTrace();
-            log.error("Error While continuing from queue", e);
+            logger.error("Error While continuing from queue", e);
             pushKafkaTopic(MessageSource.GENERIC_JSON);
         }
     }
 
     @Override
-    public InterfaceMessage getSingleMessage(StringBuffer sb)
-    {
-    	
-        sb.append("\n").append(Name.getLineNumber()).append("\t").append(Name.getClassName()).append("\t").append(Name.getCurrentMethodName()).append("\t"); 
+    public InterfaceMessage getSingleMessage(StringBuffer sb) {
 
         InterfaceMessage lMessage = null;
 
-        try
-        {
+        try {
             final JSONObject lJsonMessage = (JSONObject) mMessageArray.get(0);
 
-            if (lJsonMessage.containsKey(InterfaceInputParameters.REQ_PARAMETER_DEST))
-            {
+            if (lJsonMessage.containsKey(InterfaceInputParameters.REQ_PARAMETER_DEST)) {
                 final JSONArray lMultipleDests = (JSONArray) lJsonMessage.get(InterfaceInputParameters.REQ_PARAMETER_DEST);
 
-                if (log.isDebugEnabled())
-                    log.debug("Destination Array:  '" + lMultipleDests + "'");
-                
-                sb.append("\n").append(Name.getLineNumber()).append("\t").append(Name.getClassName()).append("\t").append(Name.getCurrentMethodName()).append("\t").append("Destination array is :  '" + lMultipleDests.size()); 
+                if (logger.isDebugEnabled())
+                    logger.debug("Destination Array for   '{}'", lMultipleDests);
 
+                if (lMultipleDests.isEmpty()) {
 
-                if (lMultipleDests.isEmpty())
-                {
-         
                     lMessage = handleNoDest(lJsonMessage);
                     lMessage.setRouteType(RouteType.DOMESTIC);
                     sb.append("Destination array is empty:  '" + lMultipleDests.size() + "' status '" + InterfaceStatusCode.DESTINATION_EMPTY + "'").append("\n");
-                    send2Mw(lMessage, InterfaceStatusCode.DESTINATION_EMPTY, false,sb);
-                }
-                else
-                    if (lMultipleDests.size() == 1)
-                    {
-                      
-                        lMessage = processSingleMessage(lJsonMessage, lMultipleDests,sb);
-                    }
+                    send2Mw(lMessage, InterfaceStatusCode.DESTINATION_EMPTY, false, sb);
+                } else if (lMultipleDests.size() == 1) {
+
+                    lMessage = processSingleMessage(lJsonMessage, lMultipleDests, sb);
+                } else {
+                    if (logger.isDebugEnabled())
+                        logger.debug("[One - Many  Single message multiple destination  ");
+
+                    final InterfaceRequestStatus lRequestStatus = getMultipleMessages(false);
+
+                    lMessage = new InterfaceMessage();
+                    if (lRequestStatus == null)
+                        lMessage.setRequestStatus(new InterfaceRequestStatus(InterfaceStatusCode.SUCCESS, null));
                     else
-                    {
-                        if (log.isDebugEnabled())
-                            log.debug("[One - Many  Single message multiple destination  ");
-
-                        final InterfaceRequestStatus lRequestStatus = getMultipleMessages(false);
-
-                        lMessage = new InterfaceMessage();
-                        if (lRequestStatus == null)
-                            lMessage.setRequestStatus(new InterfaceRequestStatus(InterfaceStatusCode.SUCCESS, null));
-                        else
-                            lMessage.setRequestStatus(lRequestStatus);
-                    }
-            }
-            else
-            {
+                        lMessage.setRequestStatus(lRequestStatus);
+                }
+            } else {
                 final InterfaceRequestStatus lRequestStatus = new InterfaceRequestStatus(InterfaceStatusCode.DESTINATION_EMPTY, "");
 
-                if (log.isDebugEnabled())
-                    log.debug("Dest array is missing  ");
+                if (logger.isDebugEnabled())
+                    logger.debug("Dest array is missing  ");
 
                 lMessage = getMessage(lJsonMessage);
                 lMessage.setRequestStatus(lRequestStatus);
                 lMessage.setRouteType(RouteType.DOMESTIC);
 
-                send2Mw(lMessage, InterfaceStatusCode.DESTINATION_EMPTY, false,sb);
+                send2Mw(lMessage, InterfaceStatusCode.DESTINATION_EMPTY, false, sb);
             }
         }
-        catch (final Exception e)
-        {
-            log.error("Exception while parsing messages ", e);
+        catch (final Exception e) {
+            logger.error("Exception while parsing messages ", e);
 
             final InterfaceRequestStatus lRequestStatus = new InterfaceRequestStatus(InterfaceStatusCode.INVALID_REQUEST, null);
             lMessage = new InterfaceMessage();
@@ -264,73 +253,65 @@ public class JSONRequestProcessor
 
     private InterfaceMessage processSingleMessage(
             JSONObject lJsonMessage,
-            JSONArray lMultipleDests,StringBuffer sb)
-            throws Exception
-    {
+            JSONArray lMultipleDests, StringBuffer sb)
+            throws Exception {
         final InterfaceMessage lMessage = getMessage(lJsonMessage);
-        
-        sb.append("\n").append(Name.getLineNumber()).append("\t").append(Name.getClassName()).append("\t").append(Name.getCurrentMethodName()).append("InterfaceMessage : getTelemarketerId() : "+lMessage.getTelemarketerId()).append("\n"); 
 
 
-        if (log.isDebugEnabled())
-            log.debug("parse message:  '" + lMessage + "'");
+        if (logger.isDebugEnabled())
+            logger.debug("InterfaceMessage obj: {}", lMessage);
 
         final String lDest = CommonUtility.nullCheck(lMultipleDests.get(0));
 
-        if (log.isDebugEnabled())
-            log.debug("mobile Number:  '" + lDest + "'");
-
-        final MessageValidater lMessageValidater = new MessageValidater(lMessage, mBasicInfo,sb);
+        final MessageValidater lMessageValidater = new MessageValidater(lMessage, mBasicInfo, sb);
 
         // lDest = appendCountryCode(lMessage, lDest);
 
-        InterfaceStatusCode    lClientStatus     = lMessageValidater.validate();
+        InterfaceStatusCode lClientStatus = lMessageValidater.validate();
 
-        if (log.isDebugEnabled())
-            log.debug("message object validation:  '" + lClientStatus + "'");
+        if (logger.isDebugEnabled())
+            logger.debug("Status after message validation for  :  '{}'", lClientStatus);
 
         if (lClientStatus == InterfaceStatusCode.SUCCESS)
-            lClientStatus = lMessageValidater.validateDest(lDest,sb);
+            lClientStatus = lMessageValidater.validateDest(lDest, sb);
 
-        
-        sb.append("\n").append(Name.getLineNumber()).append("\t").append(Name.getClassName()).append("\t").append(Name.getCurrentMethodName()).append(" lClientStatus : " +lClientStatus); 
+
+        sb.append("\n").append(Name.getLineNumber()).append("\t").append(Name.getClassName()).append("\t").append(Name.getCurrentMethodName()).append(" lClientStatus : " + lClientStatus);
 
         if (lClientStatus != InterfaceStatusCode.SUCCESS)
             lMessage.setRouteType(RouteType.DOMESTIC);
 
-        if (log.isDebugEnabled())
-            log.debug("mobile Number validation:  '" + lClientStatus + "'");
+        if (logger.isDebugEnabled())
+            logger.debug("mobile Number validation:  '" + lClientStatus + "'");
 
-        if (lClientStatus == InterfaceStatusCode.SUCCESS)
-        {
+        if (lClientStatus == InterfaceStatusCode.SUCCESS) {
             final String lScheduleTime = mBasicInfo.getScheduleTime();
-            final Date   lToDate       = "".equals(lScheduleTime) ? new Date() : DateTimeUtility.getDateFromString(lScheduleTime, DateTimeFormat.DEFAULT);
+            final Date lToDate = "".equals(lScheduleTime) ? new Date() : DateTimeUtility.getDateFromString(lScheduleTime, DateTimeFormat.DEFAULT);
 
-            if (log.isDebugEnabled())
-                log.debug("Date to check trai blockout:  '" + lToDate + "'");
+            if (logger.isDebugEnabled())
+                logger.debug("Date to check trai blockout:  '" + lToDate + "'");
 
             lClientStatus = lMessageValidater.validateTraiBlockOut(lToDate);
 
             if (lClientStatus == InterfaceStatusCode.SUCCESS)
-                if (log.isDebugEnabled())
-                    log.debug("Single message  " + lMessage + " send to kafka ");
+                if (logger.isDebugEnabled())
+                    logger.debug("Single message  " + lMessage + " send to kafka ");
         }
 
-        send2Mw(lMessage, lClientStatus, false,sb);
+        send2Mw(lMessage, lClientStatus, false, sb);
 
         final InterfaceRequestStatus lRequestStatus = new InterfaceRequestStatus(lClientStatus, null);
 
-        if (log.isDebugEnabled())
-            log.debug("single message status:  '" + lRequestStatus + "'");
+        if (logger.isDebugEnabled())
+            logger.debug("single message status:  '" + lRequestStatus + "'");
         lMessage.setRequestStatus(lRequestStatus);
         return lMessage;
     }
 
-    private  InterfaceMessage handleNoDest(
-            JSONObject aJsonMessage)
-    {
+    private InterfaceMessage handleNoDest(
+            JSONObject aJsonMessage) {
         final InterfaceRequestStatus lRequestStatus = new InterfaceRequestStatus(InterfaceStatusCode.DESTINATION_EMPTY, null);
-        final InterfaceMessage       lMessage       = getMessage(aJsonMessage);
+        final InterfaceMessage lMessage = getMessage(aJsonMessage);
 
         lMessage.setRequestStatus(lRequestStatus);
         return lMessage;
@@ -338,22 +319,18 @@ public class JSONRequestProcessor
 
     @Override
     public InterfaceRequestStatus getMultipleMessages(
-            boolean isAsync)
-
-    {
+            boolean isAsync) {
         InterfaceRequestStatus lRequestStatus = null;
-        
-        sb.append("\n").append(Name.getLineNumber()).append("\t").append(Name.getClassName()).append("\t").append(Name.getCurrentMethodName()).append("\t"); 
+
+        sb.append("\n").append(Name.getLineNumber()).append("\t").append(Name.getClassName()).append("\t").append(Name.getCurrentMethodName()).append("\t");
 
 
-        try
-        {
+        try {
             InterfaceStatusCode lClientAccessStatus = null;
-            final String        lCluster            = (String) mBasicInfo.getUserAccountInfo().get(MiddlewareConstant.MW_PLATFORM_CLUSTER.getName());
+            final String lCluster = (String) mBasicInfo.getUserAccountInfo().get(MiddlewareConstant.MW_PLATFORM_CLUSTER.getName());
 
-            if ((APIConstants.OTP_CLUSTER.equalsIgnoreCase(lCluster)))
-            {
-                log.error("For OTP cluster, Multiplt message is not applicable.");
+            if ((APIConstants.OTP_CLUSTER.equalsIgnoreCase(lCluster))) {
+                logger.error("For OTP cluster, Multiplt message is not applicable.");
 
                 if (isAsync)
                     lClientAccessStatus = InterfaceStatusCode.ACCESS_VIOLATION;
@@ -361,62 +338,54 @@ public class JSONRequestProcessor
                     return new InterfaceRequestStatus(InterfaceStatusCode.ACCESS_VIOLATION, null);
             }
 
-            for (int msgIndex = 0, arrayLength = mMessageArray.size(); msgIndex < arrayLength; msgIndex++)
-            {
-                if (log.isDebugEnabled())
-                    log.debug("message Array Length:  '" + arrayLength + "'");
+            for (int msgIndex = 0, arrayLength = mMessageArray.size(); msgIndex < arrayLength; msgIndex++) {
+                if (logger.isDebugEnabled())
+                    logger.debug("message Array Length:  '" + arrayLength + "'");
 
                 final JSONObject lJsonMessage = (JSONObject) mMessageArray.get(msgIndex);
 
-                if (log.isDebugEnabled())
-                    log.debug("jsonMessage:  '" + lJsonMessage + "'");
+                if (logger.isDebugEnabled())
+                    logger.debug("jsonMessage:  '" + lJsonMessage + "'");
 
                 final InterfaceMessage lMessage = getMessage(lJsonMessage);
 
-                if (log.isDebugEnabled())
-                    log.debug("message Object:  '" + lMessage + "'");
+                if (logger.isDebugEnabled())
+                    logger.debug("message Object:  '" + lMessage + "'");
 
-                final MessageValidater    lMessageValidater        = new MessageValidater(lMessage, mBasicInfo,sb);
+                final MessageValidater lMessageValidater = new MessageValidater(lMessage, mBasicInfo, sb);
                 final InterfaceStatusCode lMessageValidationStatus = lMessageValidater.validate();
-                InterfaceStatusCode       lMiddlewareStatus        = getMiddlewareStatus(lClientAccessStatus, lMessageValidationStatus);
+                InterfaceStatusCode lMiddlewareStatus = getMiddlewareStatus(lClientAccessStatus, lMessageValidationStatus);
 
-                if (log.isDebugEnabled())
-                    log.debug("ClientAccessStatus: '" + lClientAccessStatus + " Message Validation : '" + lMessageValidationStatus + "' MiddlewareStatus : '" + lMiddlewareStatus + "'");
+                if (logger.isDebugEnabled())
+                    logger.debug("ClientAccessStatus: '" + lClientAccessStatus + " Message Validation : '" + lMessageValidationStatus + "' MiddlewareStatus : '" + lMiddlewareStatus + "'");
 
-                if (lMiddlewareStatus == InterfaceStatusCode.SUCCESS)
-                {
-                    if (log.isDebugEnabled())
-                        log.debug("Mssage Validation Status : " + lMessageValidationStatus);
+                if (lMiddlewareStatus == InterfaceStatusCode.SUCCESS) {
+                    if (logger.isDebugEnabled())
+                        logger.debug("Mssage Validation Status : " + lMessageValidationStatus);
 
-                    if (lJsonMessage.containsKey(InterfaceInputParameters.REQ_PARAMETER_DEST))
-                    {
-                        final JSONArray jsonDestination      = (JSONArray) lJsonMessage.get(InterfaceInputParameters.REQ_PARAMETER_DEST);
+                    if (lJsonMessage.containsKey(InterfaceInputParameters.REQ_PARAMETER_DEST)) {
+                        final JSONArray jsonDestination = (JSONArray) lJsonMessage.get(InterfaceInputParameters.REQ_PARAMETER_DEST);
 
-                        int             lMobileNumbersLength = 0;
+                        int lMobileNumbersLength = 0;
                         if (jsonDestination != null)
                             lMobileNumbersLength = jsonDestination.size();
 
                         if (lMobileNumbersLength > 0)
                             handleMultipleMobileNumber(lMessage, jsonDestination, lMessageValidater, lMiddlewareStatus, isAsync);
-                        else
-                        {
+                        else {
                             lMiddlewareStatus = InterfaceStatusCode.DESTINATION_EMPTY;
                             handleNoDestArray(lMessage, lMiddlewareStatus, isAsync);
                         }
-                    }
-                    else
-                    {
+                    } else {
                         lMiddlewareStatus = InterfaceStatusCode.DESTINATION_EMPTY;
                         handleNoDestArray(lMessage, lMiddlewareStatus, isAsync);
                     }
-                }
-                else
+                } else
                     handleNoDestArray(lMessage, lMiddlewareStatus, isAsync);
             }
         }
-        catch (final Exception e)
-        {
-            log.error("Exception in processing multple message", e);
+        catch (final Exception e) {
+            logger.error("Exception in processing multple message", e);
             lRequestStatus = new InterfaceRequestStatus(InterfaceStatusCode.INTERNAL_SERVER_ERROR, "");
         }
         return lRequestStatus;
@@ -426,15 +395,14 @@ public class JSONRequestProcessor
             InterfaceMessage aMessage,
             InterfaceStatusCode aMiddlewareStaus,
             boolean aIsAsync)
-            throws Exception
-    {
-        if (log.isDebugEnabled())
-            log.debug("dest array is missing:  ");
+            throws Exception {
+        if (logger.isDebugEnabled())
+            logger.debug("dest array is missing:  ");
 
         aMessage.setRouteType(RouteType.DOMESTIC);
         aMessage.setMobileNumber(APIConstants.DEFAULT_DEST);
 
-        send2Mw(aMessage, aMiddlewareStaus, aIsAsync,sb);
+        send2Mw(aMessage, aMiddlewareStaus, aIsAsync, sb);
     }
 
     private void handleMultipleMobileNumber(
@@ -443,80 +411,69 @@ public class JSONRequestProcessor
             MessageValidater aMessageValidater,
             InterfaceStatusCode aMiddlewareStaus,
             boolean aIsAsync)
-            throws Exception
-    {
+            throws Exception {
         final String lScheduleTime = mBasicInfo.getScheduleTime();
-        final Date   lToDate       = "".equals(lScheduleTime) ? new Date() : DateTimeUtility.getDateFromString(lScheduleTime, DateTimeFormat.DEFAULT);
+        final Date lToDate = "".equals(lScheduleTime) ? new Date() : DateTimeUtility.getDateFromString(lScheduleTime, DateTimeFormat.DEFAULT);
 
-        if (log.isDebugEnabled())
-            log.debug("Date to check trai blockout:  '" + lToDate + "'");
+        if (logger.isDebugEnabled())
+            logger.debug("Date to check trai blockout:  '" + lToDate + "'");
 
-        for (final Object lElement : aJsonDestination)
-        {
+        for (final Object lElement : aJsonDestination) {
             InterfaceStatusCode destStatus = InterfaceStatusCode.SUCCESS;
-            String              lDest      = null;
+            String lDest = null;
 
-            try
-            {
+            try {
                 lDest = CommonUtility.nullCheck(lElement);
             }
-            catch (final Exception e)
-            {
+            catch (final Exception e) {
                 lDest = APIConstants.DEFAULT_DEST;
-                log.error("Dest validation failed for " + lElement, e);
-                sb.append("Dest validation failed for " + lElement+" error : "+ErrorMessage.getStackTraceAsString(e));
+                logger.error("Dest validation failed for " + lElement, e);
+                sb.append("Dest validation failed for " + lElement + " error : " + ErrorMessage.getStackTraceAsString(e));
                 destStatus = InterfaceStatusCode.DESTINATION_INVALID;
             }
 
-            if (log.isDebugEnabled())
-                log.debug("Mobile number:  '" + lDest + "'");
+            if (logger.isDebugEnabled())
+                logger.debug("Mobile number:  '" + lDest + "'");
 
-            if ((destStatus == InterfaceStatusCode.SUCCESS))
-            {
+            if ((destStatus == InterfaceStatusCode.SUCCESS)) {
                 // lDest = appendCountryCode(aMessage, lDest);
 
-                destStatus = aMessageValidater.validateDest(lDest,sb);
+                destStatus = aMessageValidater.validateDest(lDest, sb);
 
-                if (log.isDebugEnabled())
-                    log.debug("Mobile number validation status:  '" + destStatus + "'");
+                if (logger.isDebugEnabled())
+                    logger.debug("Mobile number validation status:  '" + destStatus + "'");
 
-                if (destStatus == InterfaceStatusCode.SUCCESS)
-                {
+                if (destStatus == InterfaceStatusCode.SUCCESS) {
                     destStatus = aMessageValidater.validateTraiBlockOut(lToDate);
 
-                    if (log.isDebugEnabled())
-                        log.debug("Validate trai blockout status:  '" + destStatus + "'");
-                }
-                else
-                {
+                    if (logger.isDebugEnabled())
+                        logger.debug("Validate trai blockout status:  '" + destStatus + "'");
+                } else {
                     // Mobile Validation fail case setting RouteType is Domestic.
                     aMessage.setRouteType(RouteType.DOMESTIC);
                     aMessage.setMobileNumber(lDest);
                 }
-            }
-            else
-            {
+            } else {
                 // Mobile Validation fail case setting RouteType is Domestic.
                 aMessage.setRouteType(RouteType.DOMESTIC);
                 aMessage.setMobileNumber(lDest);
             }
 
-            if (log.isDebugEnabled())
-                log.debug("Multiple message " + aMessage);
+            if (logger.isDebugEnabled())
+                logger.debug("Multiple message " + aMessage);
 
             Utility.setMessageId(aMessage);
 
             final MiddlewareHandler middlewareHandler = new MiddlewareHandler(aMessage, mBasicInfo, aMiddlewareStaus, destStatus);
-            middlewareHandler.middleWareHandover(aIsAsync, mResponseProcessor, mReqType,sb);
+            middlewareHandler.middleWareHandover(aIsAsync, mResponseProcessor, mReqType, sb);
         }
     }
 
-    private  InterfaceMessage getMessage(
-            JSONObject aMessageJson)
-    {
+    private InterfaceMessage getMessage(
+            JSONObject aMessageJson) {
         final InterfaceMessage messageBean = new InterfaceMessage();
 
-        sb.append(" JSONRequestProcessor :  aMessageJson.toJSONString() : "+aMessageJson.toJSONString()).append("\n");
+        sb.append(" JSONRequestProcessor :  aMessageJson.toJSONString() : " + aMessageJson.toJSONString()).append("\n");
 
         messageBean.setMessage(Utility.getJSONValue(aMessageJson, InterfaceInputParameters.REQ_PARAMETER_MSG));
         messageBean.setHeader(Utility.getJSONValue(aMessageJson, InterfaceInputParameters.REQ_PARAMETER_HEADER));
@@ -533,8 +490,8 @@ public class JSONRequestProcessor
         messageBean.setSplitMax(Utility.getJSONValue(aMessageJson, InterfaceInputParameters.REQ_PARAMETER_MAX_SPLIT));
         messageBean.setUrlShortner(Utility.getJSONValue(aMessageJson, InterfaceInputParameters.REQ_PARAMETER_URL_SHORTNER));
 
-        if (log.isDebugEnabled())
-            log.debug("template id " + messageBean.getTemplateId());
+        if (logger.isDebugEnabled())
+            logger.debug("template id " + messageBean.getTemplateId());
 
         if (messageBean.getTemplateId() != null)
             setTemplateMessageValues(aMessageJson, messageBean);
@@ -560,71 +517,31 @@ public class JSONRequestProcessor
         return messageBean;
     }
 
-    private static void setTemplateMessageValues(
-            JSONObject aJsonMessage,
-            InterfaceMessage aMessageBean)
-    {
-        JSONArray lTemplateValues = null;
-
-        try
-        {
-            lTemplateValues = (JSONArray) aJsonMessage.get(InterfaceInputParameters.REQ_PARAMETER_TEMPLATE_VALUES);
-
-            final int lIntReqTemplateParamSize = lTemplateValues.size();
-
-            if (log.isDebugEnabled())
-                log.debug("Template Values size : " + lIntReqTemplateParamSize);
-
-            final int      lIntTemplateMaxParamSize = Utility.getConfigParamsValueAsInt(ConfigParamConstants.SMS_TEMPLATE_MAX_PARAMS);
-
-            final String[] values                   = new String[lIntTemplateMaxParamSize];
-
-            if ((lTemplateValues != null) && (lIntReqTemplateParamSize > 0))
-            {
-                for (int i = 0; i < lIntTemplateMaxParamSize; i++)
-                    if (i >= lIntReqTemplateParamSize)
-                        values[i] = "";
-                    else
-                        values[i] = (String) lTemplateValues.get(i);
-                aMessageBean.setTemplateValues(values);
-            }
-        }
-        catch (final Exception e)
-        {
-            log.info("template value is missing");
-        }
-    }
-
     @Override
-    public String generateResponse()
-    {
+    public String generateResponse() {
         return mResponseProcessor.generateResponse();
     }
 
     @Override
-    public int getHttpStatus()
-    {
+    public int getHttpStatus() {
         return mResponseProcessor.getHttpStatus();
     }
 
     @Override
-    public int getMessagesCount()
-    {
+    public int getMessagesCount() {
 
-        try
-        {
-            if (log.isDebugEnabled())
-                log.debug("getMessagesCount() - JSON : " + mParsedJson);
+        try {
+            if (logger.isDebugEnabled())
+                logger.debug("getMessagesCount() - JSON : " + mParsedJson);
 
             mMessageArray = (JSONArray) mParsedJson.get(InterfaceInputParameters.REQ_PARAMETER_MESSAGES);
 
             if (mMessageArray != null)
                 return mMessageArray.size();
         }
-        catch (final Exception e)
-        {
+        catch (final Exception e) {
             e.printStackTrace();
-            log.error("Message object is missing");
+            logger.error("Message object is missing");
         }
 
         return 0;
@@ -632,37 +549,31 @@ public class JSONRequestProcessor
 
     @Override
     public int getNumbersCount(
-            int aIndex)
-    {
+            int aIndex) {
 
-        try
-        {
+        try {
             final JSONObject jsonMessage = (JSONObject) mMessageArray.get(aIndex);
 
-            if (jsonMessage.containsKey(InterfaceInputParameters.REQ_PARAMETER_DEST))
-            {
+            if (jsonMessage.containsKey(InterfaceInputParameters.REQ_PARAMETER_DEST)) {
                 final JSONArray lJsonDesrArr = (JSONArray) jsonMessage.get(InterfaceInputParameters.REQ_PARAMETER_DEST);
 
                 return lJsonDesrArr.size();
             }
         }
-        catch (final Exception e)
-        {
-            log.debug("Ignore the exception..", e);
+        catch (final Exception e) {
+            logger.debug("Ignore the exception..", e);
         }
 
         return 0;
     }
 
-    public String getRequestString()
-    {
+    public String getRequestString() {
         return mRequestString;
     }
 
     @Override
     public void resetRequestJson(
-            JSONObject aJsonString)
-    {
+            JSONObject aJsonString) {
         mParsedJson = aJsonString;
     }
 
@@ -671,17 +582,15 @@ public class JSONRequestProcessor
             InterfaceStatusCode aMiddlewareStaus,
             boolean aIsAsync,
             StringBuffer sb)
-            throws Exception
-    {
+            throws Exception {
         Utility.setMessageId(aMessage);
-        
-        sb.append("\n").append(Name.getLineNumber()).append("\t").append(Name.getClassName()).append("\t").append(Name.getCurrentMethodName()).append(" telemarketerid : InterfaceMessage "+aMessage.getTelemarketerId()).append("\t"); 
 
-        
+        sb.append("\n").append(Name.getLineNumber()).append("\t").append(Name.getClassName()).append("\t").append(Name.getCurrentMethodName()).append(" telemarketerid : InterfaceMessage " + aMessage.getTelemarketerId()).append("\t");
+
+
         final MiddlewareHandler middlewareHandler = new MiddlewareHandler(aMessage, mBasicInfo, aMiddlewareStaus, InterfaceStatusCode.SUCCESS);
-        middlewareHandler.middleWareHandover(aIsAsync, mResponseProcessor, mReqType,sb);
+        middlewareHandler.middleWareHandover(aIsAsync, mResponseProcessor, mReqType, sb);
     }
 
-	
 
 }

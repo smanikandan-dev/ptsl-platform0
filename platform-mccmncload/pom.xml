@@ -16,7 +16,7 @@
         <dependency>
             <groupId>${ptsl-parent-groupid-beacon}</groupId>
             <artifactId>ptsl-commondbpool</artifactId>
-            <version>1.0</version>
+            <version>${ptsl-commondbpool-version}</version>
         </dependency>
     </dependencies>
 </project>

@@ -22,11 +22,11 @@ RUN rm -rf /opt/tomcat/webapps/*
 RUN rm -rf /opt/tomcat/conf/server.xml
 RUN rm -rf /opt/tomcat/conf/logback.xml
 
-COPY logback.xml /opt/tomcat/conf/logback.xml
+COPY interface-http/logback.xml /opt/tomcat/conf/logback.xml
 
-COPY server.xml /opt/tomcat/conf/server.xml
+COPY interface-http/server.xml /opt/tomcat/conf/server.xml
 
-COPY ./target/ptsl-generichttpapiweb-1.0.0.war /opt/tomcat/webapps/genericapi.war
+COPY ./artifacts/ptsl-generichttpapiweb-1.0.0.war /opt/tomcat/webapps/genericapi.war
 
 
 COPY ./properties/common/log4j2-common.xml /log4j2-common.xml
