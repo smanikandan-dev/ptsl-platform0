@@ -154,6 +154,12 @@
         <ptsl-interfacefallback-version>1.0.0</ptsl-interfacefallback-version>
         <ptsl-cloudutil-version>1.0.0</ptsl-cloudutil-version>
         <ptsl-generichttpapiprocessor-version>1.0.0</ptsl-generichttpapiprocessor-version>
+        <ch-smpp-version>5.0.0</ch-smpp-version>
+        <ptsl-smpp-util-version>1.0.0</ptsl-smpp-util-version>
+        <ptsl-smpp-objects-version>1.0.0</ptsl-smpp-objects-version>
+        <ptsl-smpp-redisoperations-version>1.0.0</ptsl-smpp-redisoperations-version>
+        <ptsl-smpp-dboperations-version>1.0.0</ptsl-smpp-dboperations-version>
+        <ptsl-smpp-concatenate-version>1.0.0</ptsl-smpp-concatenate-version>
 
 
 
@@ -168,7 +174,7 @@
         <maven-compiler-plugin-version>3.8.1</maven-compiler-plugin-version>
         <spring-boot-maven-plugin-version>2.5.2</spring-boot-maven-plugin-version>
         <maven-source-plugin-version>3.2.1</maven-source-plugin-version>
-        <jdk-build-version>11</jdk-build-version>
+        <jdk-build-version>21</jdk-build-version>
 
     </properties>
 
@@ -381,6 +387,8 @@
         <module>platform-customkafkaprocessor</module>
         <module>platform-dlrpayloadgen</module>
         <module>platform-mccmncload</module>
+        <module>platform-dnsingle</module>
+        <module>platform-dnaging</module>
 
         <!--======= http interface  modules =======-->
         <module>http-generichttpapidata</module>
@@ -397,12 +405,12 @@
         <module>http-migrationapiweb</module>
 
         <!--======= smpp interface  modules =======-->
-<!--        <module>smpp-concatenate</module>-->
-<!--        <module>smpp-dboperations</module>-->
-<!--        <module>smpp-interfaces</module>-->
-<!--        <module>smpp-objects</module>-->
-<!--        <module>smpp-redisoperations</module>-->
-<!--        <module>smpp-utils</module>-->
+        <module>smpp-utils</module>
+        <module>smpp-objects</module>
+        <module>smpp-concatenate</module>
+        <module>smpp-dboperations</module>
+        <module>smpp-redisoperations</module>
+        <module>smpp-interfaces</module>
 
 
         <module>artifacts-platform</module>
